@@ -15,8 +15,7 @@ function Register() {
   const [values, setValues] = useState(initialState);
   const [notMatch, setNotMatch] = useState(false);
 
-  const { isLoading, showAlert } = useAppContext();
-  console.log(isLoading);
+  const { isLoading, showAlert, displayAlert } = useAppContext();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     setValues({ ...values, [e.target.name]: e.target.value });
@@ -43,7 +42,11 @@ function Register() {
 
   const onSubmit = (e: FormEvent): void => {
     e.preventDefault();
-    console.log("submitted");
+    const { name, email, password, isMember } = values;
+    if (!email || !password || (!isMember && !name)) {
+      displayAlert();
+      return;
+    }
   };
 
   return (
@@ -100,7 +103,7 @@ function Register() {
 
         <p>
           {values.isMember ? "Not a member yet? " : "Already a member? "}
-          <button onClick={toggleMember} className="member-btn">
+          <button type="button" onClick={toggleMember} className="member-btn">
             {values.isMember ? "Register" : "Login"}
           </button>
         </p>

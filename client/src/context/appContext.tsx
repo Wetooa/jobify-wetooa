@@ -1,7 +1,7 @@
 import React, { useContext, useReducer } from "react";
 import { AppContextProps } from "../components/interfaces";
 import reducer from "./reducer";
-import { DISPLAY_ALERT } from "./actions";
+import { DISPLAY_ALERT, CLEAR_ALERT } from "./actions";
 
 const initialState = {
   isLoading: false,
@@ -10,7 +10,11 @@ const initialState = {
   alertType: "",
 };
 
-const AppContext = React.createContext(initialState);
+const AppContext = React.createContext({
+  ...initialState,
+  displayAlert: () => {},
+  clearAlert: () => {},
+});
 
 const AppProvider: React.FC<AppContextProps> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -19,7 +23,17 @@ const AppProvider: React.FC<AppContextProps> = ({ children }) => {
     dispatch({ type: DISPLAY_ALERT });
   };
 
-  return <AppContext.Provider value={state}>{children}</AppContext.Provider>;
+  const clearAlert = () => {
+    setTimeout(() => {
+      dispatch({ type: CLEAR_ALERT });
+    }, 3000);
+  };
+
+  return (
+    <AppContext.Provider value={{ ...state, displayAlert, clearAlert }}>
+      {children}
+    </AppContext.Provider>
+  );
 };
 
 const useAppContext = () => {
