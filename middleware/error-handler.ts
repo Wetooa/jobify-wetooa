@@ -8,7 +8,7 @@ const errorHandler = (
   next: NextFunction
 ) => {
   console.log(err);
-  res.status(StatusCodes.BAD_REQUEST).json({ msg: "There was an error" });
+  res.status(StatusCodes.BAD_REQUEST).json({ msg: err });
 };
 
 export default errorHandler;
