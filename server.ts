@@ -1,5 +1,6 @@
 import "dotenv/config";
 import "colors";
+import "express-async-errors";
 import express, { Application, Request, Response } from "express";
 const app: Application = express();
 
