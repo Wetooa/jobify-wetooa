@@ -1,6 +1,11 @@
 import { InitialStateProps, ReducerActionProp } from "../components/interfaces";
-import { DISPLAY_ALERT, CLEAR_ALERT } from "./actions";
-import { initialState } from "./appContext";
+import {
+  DISPLAY_ALERT,
+  CLEAR_ALERT,
+  REGISTER_USER_BEGIN,
+  REGISTER_USER_ERROR,
+  REGISTER_USER_SUCCESS,
+} from "./actions";
 
 const reducer = (
   state: InitialStateProps,

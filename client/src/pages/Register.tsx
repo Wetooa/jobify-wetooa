@@ -1,5 +1,5 @@
-import { Logo, FormRow, Alert } from "../components";
 import Wrapper from "../assets/wrappers/RegisterPage";
+import { Logo, FormRow, Alert } from "../components";
 import { ChangeEvent, useState, useEffect, FormEvent } from "react";
 import { useAppContext } from "../context/appContext";
 
@@ -15,7 +15,7 @@ function Register() {
   const [values, setValues] = useState(initialState);
   const [notMatch, setNotMatch] = useState(false);
 
-  const { isLoading, showAlert, displayAlert } = useAppContext();
+  const { isLoading, showAlert, displayAlert, registerUser } = useAppContext();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     setValues({ ...values, [e.target.name]: e.target.value });
@@ -40,12 +40,19 @@ function Register() {
     }, 500);
   }, [values.password2, values.password]);
 
-  const onSubmit = (e: FormEvent): void => {
+  const onSubmit = async (e: FormEvent): Promise<void> => {
     e.preventDefault();
     const { name, email, password, isMember } = values;
     if (!email || !password || (!isMember && !name)) {
       displayAlert();
       return;
+    }
+
+    const currentUser = { name, email, password };
+    if (isMember) {
+      console.log("already a member");
+    } else {
+      registerUser(currentUser);
     }
   };
 
@@ -97,7 +104,12 @@ function Register() {
           />
         )}
 
-        <button type="submit" className="btn btn-block">
+        {/* add vibrate animation later */}
+        <button
+          type="submit"
+          className="btn btn-block"
+          disabled={isLoading || notMatch || !values.password2}
+        >
           Submit
         </button>
 

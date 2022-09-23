@@ -4,9 +4,9 @@
   "description": "Project in Action - [Jobify](https://www.jobify.live/)",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.ts",
+    "start": "nodemon server.ts --ignore client",
     "client": "npm start --prefix ./client",
-    "dev": "concurrently \"npm run start\" \"npm run client\" "
+    "dev": "concurrently --kill-others-on-fail \"npm run start\" \"npm run client\" "
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.2",
+    "@types/cors": "^2.8.12",
     "@types/express": "^4.17.14",
     "@types/jsonwebtoken": "^8.5.9",
     "@types/node": "^18.7.18",

@@ -16,17 +16,13 @@ import notFoundMiddleware from "./middleware/not-found";
 import errorHandlerMiddleware from "./middleware/error-handler";
 
 // additional middleware
-import "helmet";
-import "cors";
-import "express-rate-limit";
-import "xss-clean";
+// u can add an object with origin inside cors to set which domains can access ur server
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // routes
-app.get("/", (req: Request, res: Response) => {
-  throw new Error("Test");
-  res.send("Welcome!");
+app.get("/api/v1", (req: Request, res: Response) => {
+  res.json({ msg: "test!" });
 });
 
 app.use("/api/v1/auth", authRouter);

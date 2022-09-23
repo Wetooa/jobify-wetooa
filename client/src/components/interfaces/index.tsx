@@ -3,6 +3,9 @@ interface InitialStateProps {
   showAlert: boolean;
   alertText: string;
   alertType: string;
+  token: string;
+  user: any;
+  userLocation: string;
 }
 interface AppContextProps {
   children: React.ReactNode;

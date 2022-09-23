@@ -1,6 +1,7 @@
+import reducer from "./reducer";
+import axios from "axios";
 import React, { useContext, useReducer } from "react";
 import { AppContextProps } from "../components/interfaces";
-import reducer from "./reducer";
 import { DISPLAY_ALERT, CLEAR_ALERT } from "./actions";
 
 const initialState = {
@@ -8,29 +9,41 @@ const initialState = {
   showAlert: false,
   alertText: "",
   alertType: "",
+  token: "",
+  user: {},
+  userLocation: "",
 };
 
 const AppContext = React.createContext({
   ...initialState,
   displayAlert: () => {},
-  clearAlert: () => {},
+  registerUser: async (currentUser: {}) => {},
 });
 
 const AppProvider: React.FC<AppContextProps> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const displayAlert = () => {
+  const displayAlert = (): void => {
     dispatch({ type: DISPLAY_ALERT });
+    clearAlert();
   };
 
-  const clearAlert = () => {
+  const clearAlert = (): void => {
     setTimeout(() => {
       dispatch({ type: CLEAR_ALERT });
     }, 3000);
   };
 
+  const registerUser = async (currentUser: {}): Promise<void> => {
+    try {
+      console.log(currentUser);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <AppContext.Provider value={{ ...state, displayAlert, clearAlert }}>
+    <AppContext.Provider value={{ ...state, displayAlert, registerUser }}>
       {children}
     </AppContext.Provider>
   );

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, SchemaType } from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -24,6 +24,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide an password"],
     minlength: 6,
+    select: false,
   },
 
   // optional

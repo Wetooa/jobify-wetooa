@@ -9,11 +9,9 @@ export const register = async (req: Request, res: Response) => {
   if (!username || !email || !password || !password2) {
     throw new BadRequestError("please provide all values");
   }
-
   if (password !== password2) {
     throw new BadRequestError("passwords don't match");
   }
-
   const userAlreadyExists = await User.findOne({ email });
   if (userAlreadyExists) {
     throw new BadRequestError("Email already in use!");
@@ -26,7 +24,15 @@ export const register = async (req: Request, res: Response) => {
   });
   const token = user.createJWT();
 
-  res.status(StatusCodes.CREATED).json({ user, token });
+  res.status(StatusCodes.CREATED).json({
+    user: {
+      email: user.email,
+      lastName: user.lastname,
+      location: user.location,
+      username: user.username,
+    },
+    token,
+  });
 };
 
 export const login = async (req: Request, res: Response) => {
@@ -35,19 +41,21 @@ export const login = async (req: Request, res: Response) => {
   if (!email || !password) {
     throw new BadRequestError("please provide all values");
   }
+  console.log("1");
 
   const user: any = await User.findOne({ email });
   if (!user) {
     throw new BadRequestError("Invalid Credentials");
   }
+  console.log("2");
 
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
     throw new BadRequestError("entered the wrong password");
   }
+  console.log("3");
 
   const token = user.createJWT();
-
   res.status(StatusCodes.OK).json({ token });
 };
 
