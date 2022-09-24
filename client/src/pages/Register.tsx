@@ -1,10 +1,11 @@
 import Wrapper from "../assets/wrappers/RegisterPage";
 import { Logo, FormRow, Alert } from "../components";
 import { ChangeEvent, useState, useEffect, FormEvent } from "react";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/appContext";
 
 const initialState = {
-  name: "",
+  username: "",
   email: "",
   password: "",
   password2: "",
@@ -14,8 +15,10 @@ const initialState = {
 function Register() {
   const [values, setValues] = useState(initialState);
   const [notMatch, setNotMatch] = useState(false);
+  const navigate: NavigateFunction = useNavigate();
 
-  const { isLoading, showAlert, displayAlert, registerUser } = useAppContext();
+  const { isLoading, showAlert, user, displayAlert, registerUser } =
+    useAppContext();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     setValues({ ...values, [e.target.name]: e.target.value });
@@ -42,19 +45,27 @@ function Register() {
 
   const onSubmit = async (e: FormEvent): Promise<void> => {
     e.preventDefault();
-    const { name, email, password, isMember } = values;
-    if (!email || !password || (!isMember && !name)) {
+    const { username, email, password, password2, isMember } = values;
+    if (!email || !password || (!isMember && !username)) {
       displayAlert();
       return;
     }
 
-    const currentUser = { name, email, password };
+    const currentUser = { username, email, password, password2 };
     if (isMember) {
       console.log("already a member");
     } else {
-      registerUser(currentUser);
+      await registerUser(currentUser);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      setTimeout(() => {
+        navigate("/");
+      }, 3000);
+    }
+  }, [user, navigate]);
 
   return (
     <Wrapper>
@@ -67,10 +78,10 @@ function Register() {
         {!values.isMember && (
           <FormRow
             type="text"
-            name="name"
-            value={values.name}
+            name="username"
+            value={values.username}
             handleChange={handleChange}
-            labelText="name"
+            labelText="username"
           />
         )}
 
@@ -110,7 +121,7 @@ function Register() {
           className="btn btn-block"
           disabled={isLoading || notMatch || !values.password2}
         >
-          Submit
+          {isLoading ? "Loading..." : "Submit"}
         </button>
 
         <p>
