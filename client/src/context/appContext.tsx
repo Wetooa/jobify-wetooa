@@ -13,15 +13,19 @@ import {
 import reducer from "./reducer";
 import axios from "axios";
 
+const token = localStorage.getItem("token");
+const user = localStorage.getItem("user");
+const userLocation = localStorage.getItem("location");
+
 const initialState = {
   isLoading: false,
   showAlert: false,
   alertText: "",
   alertType: "",
-  token: "",
-  user: null,
-  userLocation: "",
-  jobLocation: "",
+  token: token || "",
+  user: user ? JSON.parse(user) : null,
+  userLocation: userLocation || "",
+  jobLocation: userLocation || "",
 };
 
 const AppContext = React.createContext({
@@ -54,8 +58,9 @@ const AppProvider: React.FC<AppContextProps> = ({ children }) => {
     try {
       // get data
       const response = await axios.post("/api/v1/auth/register", currentUser);
-      console.log(response);
       const { user, token, location } = response.data;
+      console.log(response.data);
+
       dispatch({
         type: REGISTER_USER_SUCCESS,
         payload: {
@@ -88,6 +93,12 @@ const AppProvider: React.FC<AppContextProps> = ({ children }) => {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
     localStorage.setItem("location", location);
+  };
+
+  const removeUserToLocalStorage = (): void => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("location");
   };
 
   return (

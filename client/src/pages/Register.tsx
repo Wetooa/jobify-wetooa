@@ -59,13 +59,14 @@ function Register() {
     }
   };
 
-  useEffect(() => {
-    if (user) {
-      setTimeout(() => {
-        navigate("/");
-      }, 3000);
-    }
-  }, [user, navigate]);
+  // this has a problem, during the first render, this triggers so clicking on register immediately sends us back to the dashboard
+  // useEffect(() => {
+  //   if (user) {
+  //     setTimeout(() => {
+  //       navigate("/");
+  //     }, 3000);
+  //   }
+  // }, [user, navigate]);
 
   return (
     <Wrapper>

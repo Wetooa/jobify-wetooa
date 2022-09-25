@@ -28,10 +28,10 @@ export const register = async (req: Request, res: Response) => {
     user: {
       email: user.email,
       lastName: user.lastname,
-      location: user.location,
       username: user.username,
     },
     token,
+    location: user.location,
   });
 };
 
