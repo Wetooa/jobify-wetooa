@@ -5,7 +5,10 @@ import {
   SETUP_USER_BEGIN,
   SETUP_USER_SUCCESS,
   SETUP_USER_ERROR,
+  TOGGLE_SIDEBAR,
+  LOG_OUT,
 } from "./actions";
+import { initialState } from "./appContext";
 
 const reducer = (
   state: InitialStateProps,
@@ -53,6 +56,21 @@ const reducer = (
       showAlert: true,
       alertType: "danger",
       alertText: action.payload?.msg!,
+    };
+  }
+  if (action.type === TOGGLE_SIDEBAR) {
+    return {
+      ...state,
+      showSidebar: !state.showSidebar,
+    };
+  }
+  if (action.type === LOG_OUT) {
+    return {
+      ...initialState,
+      token: "",
+      user: null,
+      jobLocation: "",
+      userLocation: "",
     };
   }
 

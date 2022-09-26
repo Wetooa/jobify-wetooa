@@ -7,8 +7,9 @@ interface InitialStateProps {
   user: any;
   userLocation: string;
   jobLocation: string;
+  showSidebar: boolean;
 }
-interface AppContextProps {
+interface ParentNodesProps {
   children: React.ReactNode;
 }
 interface ReducerActionProp {
@@ -35,7 +36,7 @@ interface SetupDetails {
 
 export type {
   InitialStateProps,
-  AppContextProps,
+  ParentNodesProps,
   ReducerActionProp,
   AddToLocalStorageProps,
   SetupDetails,

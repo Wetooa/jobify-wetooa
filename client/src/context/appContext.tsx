@@ -1,7 +1,7 @@
-import React, { useContext, useReducer } from "react";
+import React, { MouseEventHandler, useContext, useReducer } from "react";
 import {
   AddToLocalStorageProps,
-  AppContextProps,
+  ParentNodesProps,
   SetupDetails,
 } from "../components/interfaces";
 import {
@@ -10,6 +10,8 @@ import {
   SETUP_USER_BEGIN,
   SETUP_USER_SUCCESS,
   SETUP_USER_ERROR,
+  TOGGLE_SIDEBAR,
+  LOG_OUT,
 } from "./actions";
 import reducer from "./reducer";
 import axios from "axios";
@@ -27,16 +29,18 @@ const initialState = {
   user: user ? JSON.parse(user) : null,
   userLocation: userLocation || "",
   jobLocation: userLocation || "",
+  showSidebar: false,
 };
 
 const AppContext = React.createContext({
   ...initialState,
   displayAlert: () => {},
   setupUser: async (currentUser: SetupDetails) => {},
-  removeUserToLocalStorage: () => {},
+  toggleSidebar: () => {},
+  signOut: () => {},
 });
 
-const AppProvider: React.FC<AppContextProps> = ({ children }) => {
+const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const displayAlert = (): void => {
@@ -98,10 +102,19 @@ const AppProvider: React.FC<AppContextProps> = ({ children }) => {
     localStorage.setItem("location", location);
   };
 
-  const removeUserToLocalStorage = (): void => {
+  const removeFromLocalStorage = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("location");
+  };
+
+  const signOut = (): void => {
+    dispatch({ type: LOG_OUT });
+    removeFromLocalStorage();
+  };
+
+  const toggleSidebar = (): void => {
+    dispatch({ type: TOGGLE_SIDEBAR });
   };
 
   return (
@@ -110,7 +123,8 @@ const AppProvider: React.FC<AppContextProps> = ({ children }) => {
         ...state,
         displayAlert,
         setupUser,
-        removeUserToLocalStorage,
+        toggleSidebar,
+        signOut,
       }}
     >
       {children}
