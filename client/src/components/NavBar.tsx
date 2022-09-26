@@ -1,6 +1,8 @@
 import { NavLink } from "react-router-dom";
+import { useAppContext } from "../context/appContext";
 
 export default function NavBar() {
+  const { removeUserToLocalStorage } = useAppContext();
   return (
     <nav>
       <NavLink
@@ -22,6 +24,8 @@ export default function NavBar() {
       >
         Landing
       </NavLink>
+
+      <button onClick={removeUserToLocalStorage}>remove user</button>
     </nav>
   );
 }

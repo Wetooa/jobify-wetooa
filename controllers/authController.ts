@@ -7,10 +7,10 @@ export const register = async (req: Request, res: Response) => {
   const { username, email, password, password2 } = req.body;
 
   if (!username || !email || !password || !password2) {
-    throw new BadRequestError("please provide all values");
+    throw new BadRequestError("Please provide all values!");
   }
   if (password !== password2) {
-    throw new BadRequestError("passwords don't match");
+    throw new BadRequestError("Passwords don't match!");
   }
   const userAlreadyExists = await User.findOne({ email });
   if (userAlreadyExists) {
@@ -42,7 +42,7 @@ export const login = async (req: Request, res: Response) => {
     throw new BadRequestError("Please provide all values");
   }
 
-  const user: any = await User.findOne({ email });
+  const user: any = await User.findOne({ email }).select("+password");
   if (!user) {
     throw new UnauthenticatedError("Invalid Credentials");
   }
@@ -52,13 +52,10 @@ export const login = async (req: Request, res: Response) => {
     throw new UnauthenticatedError("Invalid Password");
   }
 
+  user.password = undefined;
   const token = user.createJWT();
   res.status(StatusCodes.OK).json({
-    user: {
-      emai: user.email,
-      lastname: user.lastname,
-      username: user.username,
-    },
+    user,
     token,
     location: user.location,
   });

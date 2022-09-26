@@ -17,7 +17,7 @@ function Register() {
   const [notMatch, setNotMatch] = useState(false);
   const navigate: NavigateFunction = useNavigate();
 
-  const { isLoading, showAlert, user, displayAlert, registerUser, loginUser } =
+  const { isLoading, showAlert, user, displayAlert, setupUser } =
     useAppContext();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -45,28 +45,22 @@ function Register() {
 
   const onSubmit = async (e: FormEvent): Promise<void> => {
     e.preventDefault();
-    const { username, email, password, password2, isMember } = values;
+    const { username, email, password, isMember } = values;
     if (!email || !password || (!isMember && !username)) {
       displayAlert();
       return;
     }
-
-    const currentUser = { username, email, password, password2 };
-    if (isMember) {
-      await loginUser(currentUser);
-    } else {
-      await registerUser(currentUser);
-    }
+    await setupUser(values);
   };
 
   // this has a problem, during the first render, this triggers so clicking on register immediately sends us back to the dashboard
-  // useEffect(() => {
-  //   if (user) {
-  //     setTimeout(() => {
-  //       navigate("/");
-  //     }, 3000);
-  //   }
-  // }, [user, navigate]);
+  useEffect(() => {
+    if (user) {
+      setTimeout(() => {
+        navigate("/");
+      }, 3000);
+    }
+  }, [user, navigate]);
 
   return (
     <Wrapper>

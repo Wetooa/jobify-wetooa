@@ -2,18 +2,14 @@ import React, { useContext, useReducer } from "react";
 import {
   AddToLocalStorageProps,
   AppContextProps,
-  LoginDetails,
-  RegisterDetails,
+  SetupDetails,
 } from "../components/interfaces";
 import {
   DISPLAY_ALERT,
   CLEAR_ALERT,
-  REGISTER_USER_SUCCESS,
-  REGISTER_USER_BEGIN,
-  REGISTER_USER_ERROR,
-  LOGIN_USER_BEGIN,
-  LOGIN_USER_SUCCESS,
-  LOGIN_USER_ERROR,
+  SETUP_USER_BEGIN,
+  SETUP_USER_SUCCESS,
+  SETUP_USER_ERROR,
 } from "./actions";
 import reducer from "./reducer";
 import axios from "axios";
@@ -36,8 +32,8 @@ const initialState = {
 const AppContext = React.createContext({
   ...initialState,
   displayAlert: () => {},
-  registerUser: async (currentUser: RegisterDetails) => {},
-  loginUser: async (currentUser: LoginDetails) => {},
+  setupUser: async (currentUser: SetupDetails) => {},
+  removeUserToLocalStorage: () => {},
 });
 
 const AppProvider: React.FC<AppContextProps> = ({ children }) => {
@@ -55,64 +51,35 @@ const AppProvider: React.FC<AppContextProps> = ({ children }) => {
       dispatch({
         type: CLEAR_ALERT,
       });
-    }, 3000);
+    }, 2000);
   };
 
-  const registerUser = async (currentUser: RegisterDetails): Promise<void> => {
-    // begin with dispatch statement that triggers loading
-    dispatch({ type: REGISTER_USER_BEGIN });
+  const setupUser = async (currentUser: SetupDetails): Promise<void> => {
+    dispatch({ type: SETUP_USER_BEGIN });
     try {
-      // get data
-      const response = await axios.post("/api/v1/auth/register", currentUser);
-      const { user, token, location } = response.data;
-      console.log(response.data);
+      const { isMember } = currentUser;
+      const response = await axios.post(
+        `/api/v1/auth/${isMember ? "login" : "register"}`,
+        currentUser
+      );
 
+      const { user, token, location } = response.data;
       dispatch({
-        type: REGISTER_USER_SUCCESS,
+        type: SETUP_USER_SUCCESS,
         payload: {
           user,
           token,
           location,
+          msg: `${
+            isMember ? "Login successful!" : "Registration Successful!"
+          } Redirecting...`,
         },
       });
-
-      // add to local storage
-      addUserToLocalStorage({ user, token, location });
-    } catch (error: any) {
-      // handle error
-      console.log(error.response);
-      dispatch({
-        type: REGISTER_USER_ERROR,
-        payload: {
-          msg: error.response.data.msg,
-        },
-      });
-    }
-    clearAlert();
-  };
-
-  const loginUser = async (currentUser: LoginDetails): Promise<void> => {
-    // start loading
-    dispatch({ type: LOGIN_USER_BEGIN });
-    try {
-      const response = await axios.post("/api/v1/auth/login", currentUser);
-      const { user, token, location } = response.data;
-      console.log(response.data);
-
-      dispatch({
-        type: LOGIN_USER_SUCCESS,
-        payload: {
-          user,
-          token,
-          location,
-        },
-      });
-
       addUserToLocalStorage({ user, token, location });
     } catch (error: any) {
       console.log(error.response);
       dispatch({
-        type: LOGIN_USER_ERROR,
+        type: SETUP_USER_ERROR,
         payload: {
           msg: error.response.data.msg,
         },
@@ -139,7 +106,12 @@ const AppProvider: React.FC<AppContextProps> = ({ children }) => {
 
   return (
     <AppContext.Provider
-      value={{ ...state, displayAlert, registerUser, loginUser }}
+      value={{
+        ...state,
+        displayAlert,
+        setupUser,
+        removeUserToLocalStorage,
+      }}
     >
       {children}
     </AppContext.Provider>
