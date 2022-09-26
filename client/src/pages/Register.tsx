@@ -17,7 +17,7 @@ function Register() {
   const [notMatch, setNotMatch] = useState(false);
   const navigate: NavigateFunction = useNavigate();
 
-  const { isLoading, showAlert, user, displayAlert, registerUser } =
+  const { isLoading, showAlert, user, displayAlert, registerUser, loginUser } =
     useAppContext();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -53,7 +53,7 @@ function Register() {
 
     const currentUser = { username, email, password, password2 };
     if (isMember) {
-      console.log("already a member");
+      await loginUser(currentUser);
     } else {
       await registerUser(currentUser);
     }
@@ -120,7 +120,9 @@ function Register() {
         <button
           type="submit"
           className="btn btn-block"
-          disabled={isLoading || notMatch || !values.password2}
+          disabled={
+            isLoading || notMatch || (!values.isMember && !values.password2)
+          }
         >
           {isLoading ? "Loading..." : "Submit"}
         </button>

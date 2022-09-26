@@ -1,6 +1,7 @@
 import "dotenv/config";
 import "colors";
 import "express-async-errors";
+import morgan from "morgan";
 import express, { Application, Request, Response } from "express";
 const app: Application = express();
 
@@ -14,6 +15,10 @@ import jobsRoute from "./routes/jobsController";
 // middleware
 import notFoundMiddleware from "./middleware/not-found";
 import errorHandlerMiddleware from "./middleware/error-handler";
+
+if (process.env.NODE_ENV !== "production") {
+  app.use(morgan("dev"));
+}
 
 // additional middleware
 // u can add an object with origin inside cors to set which domains can access ur server

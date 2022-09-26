@@ -2,6 +2,8 @@ import React, { useContext, useReducer } from "react";
 import {
   AddToLocalStorageProps,
   AppContextProps,
+  LoginDetails,
+  RegisterDetails,
 } from "../components/interfaces";
 import {
   DISPLAY_ALERT,
@@ -9,6 +11,9 @@ import {
   REGISTER_USER_SUCCESS,
   REGISTER_USER_BEGIN,
   REGISTER_USER_ERROR,
+  LOGIN_USER_BEGIN,
+  LOGIN_USER_SUCCESS,
+  LOGIN_USER_ERROR,
 } from "./actions";
 import reducer from "./reducer";
 import axios from "axios";
@@ -31,7 +36,8 @@ const initialState = {
 const AppContext = React.createContext({
   ...initialState,
   displayAlert: () => {},
-  registerUser: async (currentUser: {}) => {},
+  registerUser: async (currentUser: RegisterDetails) => {},
+  loginUser: async (currentUser: LoginDetails) => {},
 });
 
 const AppProvider: React.FC<AppContextProps> = ({ children }) => {
@@ -52,7 +58,7 @@ const AppProvider: React.FC<AppContextProps> = ({ children }) => {
     }, 3000);
   };
 
-  const registerUser = async (currentUser: {}): Promise<void> => {
+  const registerUser = async (currentUser: RegisterDetails): Promise<void> => {
     // begin with dispatch statement that triggers loading
     dispatch({ type: REGISTER_USER_BEGIN });
     try {
@@ -85,6 +91,36 @@ const AppProvider: React.FC<AppContextProps> = ({ children }) => {
     clearAlert();
   };
 
+  const loginUser = async (currentUser: LoginDetails): Promise<void> => {
+    // start loading
+    dispatch({ type: LOGIN_USER_BEGIN });
+    try {
+      const response = await axios.post("/api/v1/auth/login", currentUser);
+      const { user, token, location } = response.data;
+      console.log(response.data);
+
+      dispatch({
+        type: LOGIN_USER_SUCCESS,
+        payload: {
+          user,
+          token,
+          location,
+        },
+      });
+
+      addUserToLocalStorage({ user, token, location });
+    } catch (error: any) {
+      console.log(error.response);
+      dispatch({
+        type: LOGIN_USER_ERROR,
+        payload: {
+          msg: error.response.data.msg,
+        },
+      });
+    }
+    clearAlert();
+  };
+
   const addUserToLocalStorage = ({
     user,
     token,
@@ -102,7 +138,9 @@ const AppProvider: React.FC<AppContextProps> = ({ children }) => {
   };
 
   return (
-    <AppContext.Provider value={{ ...state, displayAlert, registerUser }}>
+    <AppContext.Provider
+      value={{ ...state, displayAlert, registerUser, loginUser }}
+    >
       {children}
     </AppContext.Provider>
   );

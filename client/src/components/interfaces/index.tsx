@@ -25,10 +25,20 @@ interface AddToLocalStorageProps {
   token: string;
   location: string;
 }
+interface LoginDetails {
+  email: string;
+  password: string;
+}
+interface RegisterDetails extends LoginDetails {
+  username: string;
+  password2: string;
+}
 
 export type {
   InitialStateProps,
   AppContextProps,
   ReducerActionProp,
   AddToLocalStorageProps,
+  LoginDetails,
+  RegisterDetails,
 };
