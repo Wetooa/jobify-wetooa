@@ -6,7 +6,8 @@ export const createJob = async (req: Request, res: Response) => {
 };
 
 export const getAllJobs = async (req: Request, res: Response) => {
-  res.send("get all jobs");
+  const { userId, username } = req.body.user;
+  res.send(userId);
 };
 
 export const updateJob = async (req: Request, res: Response) => {
