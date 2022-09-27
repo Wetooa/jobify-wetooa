@@ -33,6 +33,13 @@ interface SetupDetails {
   password2?: string;
   isMember: boolean;
 }
+interface LinkProps {
+  id: number;
+  text: string;
+  path: string;
+  icon: any;
+  toggleSidebar?: () => void;
+}
 
 export type {
   InitialStateProps,
@@ -40,4 +47,5 @@ export type {
   ReducerActionProp,
   AddToLocalStorageProps,
   SetupDetails,
+  LinkProps,
 };
