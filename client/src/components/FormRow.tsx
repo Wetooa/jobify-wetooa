@@ -1,13 +1,5 @@
 import { ChangeEventHandler } from "react";
-
-type FormRowProps = {
-  type: string;
-  name: string;
-  value: string;
-  handleChange: ChangeEventHandler;
-  labelText: string;
-  notMatch?: boolean;
-};
+import { FormRowProps } from "./interfaces";
 
 function FormRow({
   type,
@@ -25,6 +17,7 @@ function FormRow({
       <input
         type={type}
         name={name}
+        placeholder={name}
         value={value}
         className={notMatch ? `form-input form-input-error` : `form-input`}
         onChange={handleChange}

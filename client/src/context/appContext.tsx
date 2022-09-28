@@ -3,6 +3,7 @@ import {
   AddToLocalStorageProps,
   ParentNodesProps,
   SetupDetails,
+  UserProps,
 } from "../components/interfaces";
 import {
   DISPLAY_ALERT,
@@ -38,10 +39,13 @@ const AppContext = React.createContext({
   setupUser: async (currentUser: SetupDetails) => {},
   toggleSidebar: () => {},
   signOut: () => {},
+  updateUser: async (currentUser: UserProps) => {},
 });
 
 const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  axios.defaults.headers.common["authorization"] = `Bearer ${state.token}`;
 
   const displayAlert = (): void => {
     dispatch({
@@ -67,7 +71,7 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
         currentUser
       );
 
-      const { user, token, location } = response.data;
+      const { user, token, location }: AddToLocalStorageProps = response.data;
       dispatch({
         type: SETUP_USER_SUCCESS,
         payload: {
@@ -81,7 +85,6 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
       });
       addUserToLocalStorage({ user, token, location });
     } catch (error: any) {
-      console.log(error.response);
       dispatch({
         type: SETUP_USER_ERROR,
         payload: {
@@ -97,12 +100,12 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
     token,
     location,
   }: AddToLocalStorageProps): void => {
-    localStorage.setItem("token", token);
+    localStorage.setItem("token", token!);
     localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("location", location);
+    localStorage.setItem("location", location!);
   };
 
-  const removeFromLocalStorage = () => {
+  const removeFromLocalStorage = (): void => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("location");
@@ -117,6 +120,18 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
     dispatch({ type: TOGGLE_SIDEBAR });
   };
 
+  const updateUser = async (currentUser: UserProps): Promise<void> => {
+    try {
+      const { data } = await axios.patch(
+        "/api/v1/auth/updateUser",
+        currentUser
+      );
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -125,6 +140,7 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
         setupUser,
         toggleSidebar,
         signOut,
+        updateUser,
       }}
     >
       {children}

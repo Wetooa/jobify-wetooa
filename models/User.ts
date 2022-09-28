@@ -45,6 +45,7 @@ const UserSchema = new mongoose.Schema({
 UserSchema.pre("save", async function () {
   // --IMPORTANT--, if you want this to run once updating, use User.save in controller.ts... updating wont trigger this remember
 
+  if (!this.isModified("password")) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });

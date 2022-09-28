@@ -1,10 +1,18 @@
+import { ChangeEventHandler } from "react";
+
+interface UserProps {
+  username?: string;
+  location?: string;
+  email?: string;
+  lastname?: string;
+}
 interface InitialStateProps {
   isLoading: boolean;
   showAlert: boolean;
   alertText: string;
   alertType: string;
   token: string;
-  user: any;
+  user: UserProps | null;
   userLocation: string;
   jobLocation: string;
   showSidebar: boolean;
@@ -14,17 +22,13 @@ interface ParentNodesProps {
 }
 interface ReducerActionProp {
   type: string;
-  payload?: {
-    user?: string;
-    token?: string;
-    location?: string;
-    msg?: string;
-  };
+  payload?: AddToLocalStorageProps;
 }
 interface AddToLocalStorageProps {
-  user: {};
-  token: string;
-  location: string;
+  user?: UserProps;
+  token?: string;
+  location?: string;
+  msg?: string;
 }
 interface SetupDetails {
   email: string;
@@ -40,6 +44,14 @@ interface LinkProps {
   icon: any;
   toggleSidebar?: () => void;
 }
+interface FormRowProps {
+  type: string;
+  name: string;
+  value: string;
+  handleChange: ChangeEventHandler;
+  labelText?: string;
+  notMatch?: boolean;
+}
 
 export type {
   InitialStateProps,
@@ -48,4 +60,6 @@ export type {
   AddToLocalStorageProps,
   SetupDetails,
   LinkProps,
+  FormRowProps,
+  UserProps,
 };

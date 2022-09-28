@@ -19,7 +19,7 @@ const reducer = (
       ...state,
       showAlert: true,
       alertType: "danger",
-      alertText: "Please provide all values",
+      alertText: "Please provide all values!",
     };
   }
   if (action.type === CLEAR_ALERT) {
