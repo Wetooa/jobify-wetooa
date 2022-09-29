@@ -16,6 +16,14 @@ interface InitialStateProps {
   userLocation: string;
   jobLocation: string;
   showSidebar: boolean;
+  isEditing: boolean;
+  editJobId: string;
+  position: string;
+  company: string;
+  jobTypeOptions: string[];
+  jobType: string;
+  statusOptions: string[];
+  status: string;
 }
 interface ParentNodesProps {
   children: React.ReactNode;

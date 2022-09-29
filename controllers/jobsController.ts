@@ -1,8 +1,19 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
+import { BadRequestError, UnauthenticatedError } from "../errors";
+import Job from "../models/Job";
 
 export const createJob = async (req: Request, res: Response) => {
-  res.send("create jobs");
+  const { position, company } = req.body;
+
+  if (!position || !company) {
+    throw new BadRequestError("Provide all values!");
+  }
+
+  req.body.createdBy = req.body.user.userId;
+  const job = await Job.create(req.body);
+
+  res.status(StatusCodes.CREATED).json({ job });
 };
 
 export const getAllJobs = async (req: Request, res: Response) => {

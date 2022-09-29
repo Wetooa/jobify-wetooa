@@ -24,13 +24,21 @@ const userLocation = localStorage.getItem("location");
 const initialState = {
   isLoading: false,
   showAlert: false,
+  showSidebar: false,
   alertText: "",
   alertType: "",
   token: token || "",
   user: user ? JSON.parse(user) : null,
+  isEditing: false,
+  editJobId: "",
+  position: "",
+  company: "",
   userLocation: userLocation || "",
   jobLocation: userLocation || "",
-  showSidebar: false,
+  jobTypeOptions: ["fulltime", "partime", "remote", "internship"],
+  jobType: "full-time",
+  statusOptions: ["interview", "declined", "pending"],
+  status: "pending",
 };
 
 const AppContext = React.createContext({
