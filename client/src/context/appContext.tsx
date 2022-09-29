@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, useContext, useReducer } from "react";
+import React, { useContext, useReducer } from "react";
 import {
   AddToLocalStorageProps,
   ParentNodesProps,
@@ -15,7 +15,7 @@ import {
   LOG_OUT,
 } from "./actions";
 import reducer from "./reducer";
-import axios from "axios";
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
 const token = localStorage.getItem("token");
 const user = localStorage.getItem("user");
@@ -45,8 +45,36 @@ const AppContext = React.createContext({
 const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  axios.defaults.headers.common["authorization"] = `Bearer ${state.token}`;
+  // axios.defaults.headers.common["authorization"] = `Bearer ${state.token}`;
 
+  const authfetch = axios.create({
+    baseURL: "/api/v1",
+  });
+
+  authfetch.interceptors.request.use(
+    (config: AxiosRequestConfig) => {
+      // config.headers!["authorization"] = `Bearer ${state.token}`;
+      return config;
+    },
+    (error: AxiosError) => {
+      return Promise.reject(error);
+    }
+  );
+
+  authfetch.interceptors.response.use(
+    (response: AxiosRequestConfig) => {
+      return response;
+    },
+    (error: AxiosError) => {
+      // sign out if Unauthenticated Error
+      if (error.response?.status === 401) {
+        signOut();
+      }
+      return Promise.reject(error);
+    }
+  );
+
+  // alerts
   const displayAlert = (): void => {
     dispatch({
       type: DISPLAY_ALERT,
@@ -62,6 +90,7 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
     }, 2000);
   };
 
+  // user requests
   const setupUser = async (currentUser: SetupDetails): Promise<void> => {
     dispatch({ type: SETUP_USER_BEGIN });
     try {
@@ -85,6 +114,7 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
       });
       addUserToLocalStorage({ user, token, location });
     } catch (error: any) {
+      // only display setup user error when its unauthenticated error cuz we might see the alert in the register page since its a global state and all that
       dispatch({
         type: SETUP_USER_ERROR,
         payload: {
@@ -95,6 +125,40 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
     clearAlert();
   };
 
+  const updateUser = async (currentUser: UserProps): Promise<void> => {
+    dispatch({ type: SETUP_USER_BEGIN });
+    try {
+      const { data } = await authfetch.patch("auth/updateUser", currentUser);
+      const { user, token, location }: AddToLocalStorageProps = data;
+      dispatch({
+        type: SETUP_USER_SUCCESS,
+        payload: {
+          user,
+          token,
+          location,
+          msg: "Successfully updated user profile!",
+        },
+      });
+      addUserToLocalStorage({ user, token, location });
+    } catch (error: any) {
+      if (error.response.status !== 401) {
+        dispatch({
+          type: SETUP_USER_ERROR,
+          payload: {
+            msg: error.response.data.msg,
+          },
+        });
+      }
+    }
+    clearAlert();
+  };
+
+  const signOut = (): void => {
+    dispatch({ type: LOG_OUT });
+    removeFromLocalStorage();
+  };
+
+  // local storage functions
   const addUserToLocalStorage = ({
     user,
     token,
@@ -111,25 +175,9 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
     localStorage.removeItem("location");
   };
 
-  const signOut = (): void => {
-    dispatch({ type: LOG_OUT });
-    removeFromLocalStorage();
-  };
-
+  // app functionality
   const toggleSidebar = (): void => {
     dispatch({ type: TOGGLE_SIDEBAR });
-  };
-
-  const updateUser = async (currentUser: UserProps): Promise<void> => {
-    try {
-      const { data } = await axios.patch(
-        "/api/v1/auth/updateUser",
-        currentUser
-      );
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   return (

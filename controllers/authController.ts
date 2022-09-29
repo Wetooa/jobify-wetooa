@@ -39,17 +39,17 @@ export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    throw new BadRequestError("Please provide all values");
+    throw new BadRequestError("Please provide all values!");
   }
 
   const user: any = await User.findOne({ email }).select("+password");
   if (!user) {
-    throw new UnauthenticatedError("Invalid Credentials");
+    throw new UnauthenticatedError("Invalid Credentials!");
   }
 
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
-    throw new UnauthenticatedError("Invalid Password");
+    throw new UnauthenticatedError("Invalid Password!");
   }
 
   user.password = undefined;
@@ -65,7 +65,7 @@ export const updateUser = async (req: Request, res: Response) => {
   const { email, username, lastname, location } = req.body;
 
   if (!email || !username || !lastname || !location) {
-    throw new BadRequestError("Please provide all values");
+    throw new BadRequestError("Please provide all values!");
   }
 
   const user: any = await User.findOne({ _id: req.body.user.userId });

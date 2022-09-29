@@ -16,10 +16,10 @@ function Profile() {
     e.preventDefault();
 
     // remove while testing to see server trix
-    if (!username || !email || !lastname || !location) {
-      displayAlert();
-      return;
-    }
+    // if (!username || !email || !lastname || !location) {
+    //   displayAlert();
+    //   return;
+    // }
     updateUser({ username, email, lastname, location });
   };
 
