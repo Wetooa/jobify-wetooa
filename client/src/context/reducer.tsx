@@ -1,4 +1,8 @@
-import { InitialStateProps, ReducerActionProp } from "../components/interfaces";
+import {
+  InitialStateProps,
+  JobsInitialState,
+  ReducerActionProp,
+} from "../components/interfaces";
 import {
   DISPLAY_ALERT,
   CLEAR_ALERT,
@@ -7,11 +11,13 @@ import {
   SETUP_USER_ERROR,
   TOGGLE_SIDEBAR,
   LOG_OUT,
+  HANDLE_CHANGE,
+  CLEAR_VALUES,
 } from "./actions";
 import { initialState } from "./appContext";
 
 const reducer = (
-  state: InitialStateProps,
+  state: InitialStateProps & JobsInitialState,
   action: ReducerActionProp
 ): InitialStateProps => {
   if (action.type === DISPLAY_ALERT) {
@@ -61,7 +67,7 @@ const reducer = (
   if (action.type === TOGGLE_SIDEBAR) {
     return {
       ...state,
-      showSidebar: !state.showSidebar,
+      showSidebar: state!.showSidebar,
     };
   }
   if (action.type === LOG_OUT) {
@@ -73,7 +79,27 @@ const reducer = (
       userLocation: "",
     };
   }
-
+  if (action.type === HANDLE_CHANGE) {
+    return {
+      ...state,
+      [action.payload!.name!]: action.payload!.value,
+    };
+  }
+  if (action.type === CLEAR_VALUES) {
+    const initialState: JobsInitialState = {
+      isEditing: false,
+      editJobId: "",
+      position: "",
+      company: "",
+      jobType: "",
+      status: "",
+      jobLocation: state.userLocation,
+    };
+    return {
+      ...state,
+      ...initialState,
+    };
+  }
   throw new Error(`No matching actions: ${action.type}`);
 };
 

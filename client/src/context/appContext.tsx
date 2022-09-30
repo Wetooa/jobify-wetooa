@@ -1,6 +1,7 @@
 import React, { useContext, useReducer } from "react";
 import {
   AddToLocalStorageProps,
+  HandleChangeProps,
   ParentNodesProps,
   SetupDetails,
   UserProps,
@@ -13,6 +14,8 @@ import {
   SETUP_USER_ERROR,
   TOGGLE_SIDEBAR,
   LOG_OUT,
+  HANDLE_CHANGE,
+  CLEAR_VALUES,
 } from "./actions";
 import reducer from "./reducer";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
@@ -36,7 +39,7 @@ const initialState = {
   userLocation: userLocation || "",
   jobLocation: userLocation || "",
   jobTypeOptions: ["fulltime", "partime", "remote", "internship"],
-  jobType: "full-time",
+  jobType: "fulltime",
   statusOptions: ["interview", "declined", "pending"],
   status: "pending",
 };
@@ -48,6 +51,8 @@ const AppContext = React.createContext({
   toggleSidebar: () => {},
   signOut: () => {},
   updateUser: async (currentUser: UserProps) => {},
+  handleChange: ({ name, value }: HandleChangeProps) => {},
+  clearValues: () => {},
 });
 
 const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
@@ -188,6 +193,20 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
     dispatch({ type: TOGGLE_SIDEBAR });
   };
 
+  const handleChange = ({ name, value }: HandleChangeProps): void => {
+    dispatch({
+      type: HANDLE_CHANGE,
+      payload: {
+        name,
+        value,
+      },
+    });
+  };
+
+  const clearValues = (): void => {
+    dispatch({ type: CLEAR_VALUES });
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -197,6 +216,8 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
         toggleSidebar,
         signOut,
         updateUser,
+        handleChange,
+        clearValues,
       }}
     >
       {children}

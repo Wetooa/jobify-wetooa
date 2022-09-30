@@ -7,3 +7,5 @@ export const SETUP_USER_ERROR = "SETUP_USER_ERROR";
 
 export const TOGGLE_SIDEBAR = "TOGGLE_SIDEBAR";
 export const LOG_OUT = "LOG_OUT";
+export const HANDLE_CHANGE = "HANDLE_CHANGE";
+export const CLEAR_VALUES = "CLEAR_VALUES";

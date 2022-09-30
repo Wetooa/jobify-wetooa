@@ -1,7 +1,7 @@
-import e from "express";
 import { ChangeEvent, FormEvent } from "react";
 import Wrapper from "../../assets/wrappers/DashboardFormPage";
 import { FormRow, Alert } from "../../components";
+import FormRowSelect from "../../components/FormRowSelect";
 import { useAppContext } from "../../context/appContext";
 
 function AddJob() {
@@ -11,19 +11,28 @@ function AddJob() {
     position,
     company,
     jobLocation,
-    status,
     jobType,
+    jobTypeOptions,
+    status,
+    statusOptions,
+    displayAlert,
+    handleChange,
+    clearValues,
   } = useAppContext();
 
-  const handleJobInput = (e: ChangeEvent<HTMLInputElement>): void => {
-    const name = e.target.name;
-    const value = e.target.value;
-    console.log(`name: ${name} val: ${value}`);
+  const handleJobInput = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ): void => {
+    handleChange({ name: e.target!.name, value: e.target!.value });
   };
 
   const handleSubmit = async (e: FormEvent): Promise<void> => {
     e.preventDefault();
-    console.log("e");
+    if (!position || !company || !jobLocation) {
+      displayAlert();
+      return;
+    }
+    console.log("create job");
   };
 
   return (
@@ -31,6 +40,7 @@ function AddJob() {
       <form className="form" onSubmit={handleSubmit}>
         <h3>{isEditing ? "edit job" : "add job"}</h3>
         {showAlert && <Alert />}
+
         <div className="form-center">
           <FormRow
             name="position"
@@ -56,25 +66,33 @@ function AddJob() {
             handleChange={handleJobInput}
           />
 
-          <FormRow
-            name="status"
-            labelText="status"
-            type="text"
-            value={status}
-            handleChange={handleJobInput}
-          />
-
-          <FormRow
+          {/* job type */}
+          <FormRowSelect
             name="jobType"
             labelText="job type"
-            type="text"
             value={jobType}
             handleChange={handleJobInput}
+            list={jobTypeOptions}
+          />
+
+          {/* job status */}
+          <FormRowSelect
+            name="status"
+            labelText="status"
+            value={status}
+            handleChange={handleJobInput}
+            list={statusOptions}
           />
 
           <div className="btn-container">
             <button className="btn btn-block submit-btn">Submit</button>
-            <button className="btn btn-block clear-btn">Clear</button>
+            <button
+              type="button"
+              className="btn btn-block clear-btn"
+              onClick={clearValues}
+            >
+              Clear
+            </button>
           </div>
         </div>
       </form>

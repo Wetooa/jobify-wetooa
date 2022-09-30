@@ -20,17 +20,18 @@ interface InitialStateProps {
   editJobId: string;
   position: string;
   company: string;
-  jobTypeOptions: string[];
   jobType: string;
-  statusOptions: string[];
   status: string;
+  jobTypeOptions: string[];
+  statusOptions: string[];
 }
 interface ParentNodesProps {
   children: React.ReactNode;
 }
+
 interface ReducerActionProp {
   type: string;
-  payload?: AddToLocalStorageProps;
+  payload?: AddToLocalStorageProps & HandleChangeProps;
 }
 interface AddToLocalStorageProps {
   user?: UserProps;
@@ -38,6 +39,11 @@ interface AddToLocalStorageProps {
   location?: string;
   msg?: string;
 }
+interface HandleChangeProps {
+  name?: string;
+  value?: string;
+}
+
 interface SetupDetails {
   email: string;
   password: string;
@@ -53,12 +59,24 @@ interface LinkProps {
   toggleSidebar?: () => void;
 }
 interface FormRowProps {
-  type: string;
+  type?: string;
   name: string;
   value: string;
   handleChange: ChangeEventHandler;
   labelText?: string;
   notMatch?: boolean;
+}
+interface SelectFromRowProps extends FormRowProps {
+  list: string[];
+}
+interface JobsInitialState {
+  isEditing: boolean;
+  editJobId: string;
+  position: string;
+  company: string;
+  jobType: string;
+  status: string;
+  jobLocation: string;
 }
 
 export type {
@@ -66,8 +84,11 @@ export type {
   ParentNodesProps,
   ReducerActionProp,
   AddToLocalStorageProps,
+  HandleChangeProps,
   SetupDetails,
   LinkProps,
   FormRowProps,
   UserProps,
+  SelectFromRowProps,
+  JobsInitialState,
 };

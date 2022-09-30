@@ -30,6 +30,7 @@
     "@types/jsonwebtoken": "^8.5.9",
     "@types/morgan": "^1.9.3",
     "@types/node": "^18.7.18",
+    "@types/react": "^18.0.21",
     "@types/validator": "^13.7.6",
     "bcryptjs": "^2.4.3",
     "colors": "^1.4.0",
