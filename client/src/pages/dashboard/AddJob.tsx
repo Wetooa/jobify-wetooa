@@ -6,6 +6,7 @@ import { useAppContext } from "../../context/appContext";
 
 function AddJob() {
   const {
+    isLoading,
     showAlert,
     isEditing,
     position,
@@ -18,6 +19,7 @@ function AddJob() {
     displayAlert,
     handleChange,
     clearValues,
+    createJob,
   } = useAppContext();
 
   const handleJobInput = (
@@ -32,7 +34,7 @@ function AddJob() {
       displayAlert();
       return;
     }
-    console.log("create job");
+    createJob();
   };
 
   return (
@@ -85,7 +87,13 @@ function AddJob() {
           />
 
           <div className="btn-container">
-            <button className="btn btn-block submit-btn">Submit</button>
+            <button
+              type="submit"
+              className="btn btn-block submit-btn"
+              disabled={isLoading}
+            >
+              {isLoading ? "Loading..." : "Submit"}
+            </button>
             <button
               type="button"
               className="btn btn-block clear-btn"

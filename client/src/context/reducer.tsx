@@ -13,11 +13,14 @@ import {
   LOG_OUT,
   HANDLE_CHANGE,
   CLEAR_VALUES,
+  CREATE_JOB_BEGIN,
+  CREATE_JOB_SUCCESS,
+  CREATE_JOB_ERROR,
 } from "./actions";
 import { initialState } from "./appContext";
 
 const reducer = (
-  state: InitialStateProps & JobsInitialState,
+  state: InitialStateProps,
   action: ReducerActionProp
 ): InitialStateProps => {
   if (action.type === DISPLAY_ALERT) {
@@ -67,7 +70,7 @@ const reducer = (
   if (action.type === TOGGLE_SIDEBAR) {
     return {
       ...state,
-      showSidebar: state!.showSidebar,
+      showSidebar: !state.showSidebar,
     };
   }
   if (action.type === LOG_OUT) {
@@ -91,13 +94,37 @@ const reducer = (
       editJobId: "",
       position: "",
       company: "",
-      jobType: "",
-      status: "",
+      jobType: "fulltime",
+      status: "pending",
       jobLocation: state.userLocation,
     };
     return {
       ...state,
       ...initialState,
+    };
+  }
+  if (action.type === CREATE_JOB_BEGIN) {
+    return {
+      ...state,
+      isLoading: false,
+    };
+  }
+  if (action.type === CREATE_JOB_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: true,
+      alertType: "success",
+      alertText: "Successfully added job!",
+    };
+  }
+  if (action.type === CREATE_JOB_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: true,
+      alertType: "danger",
+      alertText: action.payload?.msg!,
     };
   }
   throw new Error(`No matching actions: ${action.type}`);

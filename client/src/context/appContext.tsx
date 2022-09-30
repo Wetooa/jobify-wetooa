@@ -16,6 +16,9 @@ import {
   LOG_OUT,
   HANDLE_CHANGE,
   CLEAR_VALUES,
+  CREATE_JOB_BEGIN,
+  CREATE_JOB_SUCCESS,
+  CREATE_JOB_ERROR,
 } from "./actions";
 import reducer from "./reducer";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
@@ -53,6 +56,7 @@ const AppContext = React.createContext({
   updateUser: async (currentUser: UserProps) => {},
   handleChange: ({ name, value }: HandleChangeProps) => {},
   clearValues: () => {},
+  createJob: async () => {},
 });
 
 const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
@@ -66,7 +70,7 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
 
   authfetch.interceptors.request.use(
     (config: AxiosRequestConfig) => {
-      // config.headers!["authorization"] = `Bearer ${state.token}`;
+      config.headers!["authorization"] = `Bearer ${state.token}`;
       return config;
     },
     (error: AxiosError) => {
@@ -171,6 +175,34 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
     removeFromLocalStorage();
   };
 
+  const createJob = async (): Promise<void> => {
+    dispatch({ type: CREATE_JOB_BEGIN });
+    console.log(state);
+
+    try {
+      const { position, company, jobLocation, jobType, status } = state;
+      await authfetch.post("/jobs", {
+        position,
+        company,
+        jobLocation,
+        jobType,
+        status,
+      });
+      dispatch({ type: CREATE_JOB_SUCCESS });
+      clearValues();
+    } catch (error: any) {
+      if (error.response.status !== 401) return;
+
+      dispatch({
+        type: CREATE_JOB_ERROR,
+        payload: {
+          msg: error.response.data.msg,
+        },
+      });
+    }
+    clearAlert();
+  };
+
   // local storage functions
   const addUserToLocalStorage = ({
     user,
@@ -218,6 +250,7 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
         updateUser,
         handleChange,
         clearValues,
+        createJob,
       }}
     >
       {children}
