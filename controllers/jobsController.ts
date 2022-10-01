@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { BadRequestError, UnauthenticatedError } from "../errors";
+import { BadRequestError, NotFound, UnauthenticatedError } from "../errors";
 import Job from "../models/Job";
 
 export const createJob = async (req: Request, res: Response) => {
@@ -24,24 +24,27 @@ export const getAllJobs = async (req: Request, res: Response) => {
 };
 
 export const updateJob = async (req: Request, res: Response) => {
-  const { position, company, location, id } = req.body;
-  const userId = req.body.user.userId;
-  console.log(req.body);
-  console.log(userId, id);
+  const { user, ...editedJob } = req.body;
+  const { id: jobId } = req.params;
+  const { position, company } = editedJob;
 
-  if (!position || !company || !location) {
+  console.log(user, editedJob, jobId);
+
+  if (!position || !company) {
     return new BadRequestError("Please provide all values!");
   }
-  console.log("coooo");
 
-  const job = await Job.findByIdAndUpdate(
-    { _id: id, createdBy: userId },
-    req.body,
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
+  const job = await Job.findOne({ _id: jobId });
+  if (!job) {
+    throw new NotFound(`No job with id: ${jobId}`);
+  }
+
+  // check permissions part
+
+  const updatedJob = await Job.findOneAndUpdate({ _id: jobId }, editedJob, {
+    new: true,
+    runValidators: true,
+  });
   res.status(StatusCodes.OK).json({ job });
 };
 

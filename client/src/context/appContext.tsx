@@ -283,7 +283,6 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
     let url = `/jobs/${state.editJobId}`;
 
     const job = {
-      id: state.editJobId,
       postion: state.position,
       company: state.company,
       location: state.jobLocation,
@@ -293,8 +292,8 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
     try {
       const { data } = await authfetch.patch(url, { ...job });
       console.log(data);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.log(error.response);
     }
   };
 
