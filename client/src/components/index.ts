@@ -6,4 +6,16 @@ import NavBar from "./Navbar";
 import BigSidebar from "./BigSidebar";
 import SmallSidebar from "./SmallSidebar";
 
-export { Logo, FormRow, Alert, NavBar, BigSidebar, SmallSidebar };
+import JobsContainer from "./JobsContainer";
+import SearchContainer from "./SearchContainer";
+
+export {
+  Logo,
+  FormRow,
+  Alert,
+  NavBar,
+  BigSidebar,
+  SmallSidebar,
+  JobsContainer,
+  SearchContainer,
+};

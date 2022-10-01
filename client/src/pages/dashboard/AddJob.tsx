@@ -20,6 +20,7 @@ function AddJob() {
     handleChange,
     clearValues,
     createJob,
+    editJob,
   } = useAppContext();
 
   const handleJobInput = (
@@ -32,6 +33,10 @@ function AddJob() {
     e.preventDefault();
     if (!position || !company || !jobLocation) {
       displayAlert();
+      return;
+    }
+    if (isEditing) {
+      editJob();
       return;
     }
     createJob();

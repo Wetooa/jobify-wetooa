@@ -1,4 +1,5 @@
 import {
+  IndividualJobProps,
   InitialStateProps,
   JobsInitialState,
   ReducerActionProp,
@@ -16,6 +17,9 @@ import {
   CREATE_JOB_BEGIN,
   CREATE_JOB_SUCCESS,
   CREATE_JOB_ERROR,
+  GET_JOB_BEGIN,
+  GET_JOB_SUCCESS,
+  SET_EDIT_JOB,
 } from "./actions";
 import { initialState } from "./appContext";
 
@@ -106,7 +110,7 @@ const reducer = (
   if (action.type === CREATE_JOB_BEGIN) {
     return {
       ...state,
-      isLoading: false,
+      isLoading: true,
     };
   }
   if (action.type === CREATE_JOB_SUCCESS) {
@@ -125,6 +129,38 @@ const reducer = (
       showAlert: true,
       alertType: "danger",
       alertText: action.payload?.msg!,
+    };
+  }
+  if (action.type === GET_JOB_BEGIN) {
+    return {
+      ...state,
+      isLoading: true,
+      showAlert: false,
+    };
+  }
+  if (action.type === GET_JOB_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      jobs: action.payload?.jobs!,
+      totalJobs: action.payload?.totalJobs!,
+      numOfPages: action.payload?.numOfPages!,
+    };
+  }
+  if (action.type === SET_EDIT_JOB) {
+    const job: IndividualJobProps = state.jobs.find(
+      (job: IndividualJobProps) => job._id === action.payload?.id
+    );
+    const { _id, company, position, jobType, jobLocation, status } = job;
+    return {
+      ...state,
+      isEditing: true,
+      editJobId: _id,
+      company,
+      position,
+      jobLocation,
+      jobType,
+      status,
     };
   }
   throw new Error(`No matching actions: ${action.type}`);

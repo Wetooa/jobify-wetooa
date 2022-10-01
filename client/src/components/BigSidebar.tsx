@@ -21,7 +21,7 @@ function BigSidebar() {
           </header>
           <div className="nav-links">
             {links.map((link: LinkProps) => {
-              return <NavLinks {...link} />;
+              return <NavLinks key={link.id} {...link} />;
             })}
           </div>
         </div>

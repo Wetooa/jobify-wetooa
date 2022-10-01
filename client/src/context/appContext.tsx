@@ -19,6 +19,9 @@ import {
   CREATE_JOB_BEGIN,
   CREATE_JOB_SUCCESS,
   CREATE_JOB_ERROR,
+  GET_JOB_SUCCESS,
+  SET_EDIT_JOB,
+  GET_JOB_BEGIN,
 } from "./actions";
 import reducer from "./reducer";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
@@ -45,6 +48,10 @@ const initialState = {
   jobType: "fulltime",
   statusOptions: ["interview", "declined", "pending"],
   status: "pending",
+  jobs: [],
+  totalJobs: 0,
+  numOfPages: 1,
+  page: 1,
 };
 
 const AppContext = React.createContext({
@@ -57,6 +64,10 @@ const AppContext = React.createContext({
   handleChange: ({ name, value }: HandleChangeProps) => {},
   clearValues: () => {},
   createJob: async () => {},
+  getJobs: async () => {},
+  setEditJob: (id: string) => {},
+  deleteJob: (id: string) => {},
+  editJob: async () => {},
 });
 
 const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
@@ -239,6 +250,58 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
     dispatch({ type: CLEAR_VALUES });
   };
 
+  const getJobs = async (): Promise<void> => {
+    dispatch({ type: GET_JOB_BEGIN });
+    let url = "/jobs";
+    try {
+      const { data } = await authfetch(url);
+      const { jobs, totalJobs, numOfPages } = data;
+      dispatch({
+        type: GET_JOB_SUCCESS,
+        payload: {
+          jobs,
+          totalJobs,
+          numOfPages,
+        },
+      });
+    } catch (error: any) {
+      signOut();
+    }
+    clearAlert();
+  };
+
+  const setEditJob = (id: string): void => {
+    dispatch({
+      type: SET_EDIT_JOB,
+      payload: {
+        id,
+      },
+    });
+  };
+
+  const editJob = async (): Promise<void> => {
+    let url = `/jobs/${state.editJobId}`;
+
+    const job = {
+      id: state.editJobId,
+      postion: state.position,
+      company: state.company,
+      location: state.jobLocation,
+      jobType: state.jobType,
+      status: state.status,
+    };
+    try {
+      const { data } = await authfetch.patch(url, { ...job });
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteJob = (id: string): void => {
+    console.log(`deleted job: ${id}`);
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -251,6 +314,10 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
         handleChange,
         clearValues,
         createJob,
+        getJobs,
+        setEditJob,
+        deleteJob,
+        editJob,
       }}
     >
       {children}

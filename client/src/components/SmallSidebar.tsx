@@ -24,7 +24,13 @@ function SmallSidebar() {
           </header>
           <div className="nav-links">
             {links.map((link: LinkProps) => {
-              return <NavLinks {...link} toggleSidebar={toggleSidebar} />;
+              return (
+                <NavLinks
+                  key={link.id}
+                  {...link}
+                  toggleSidebar={toggleSidebar}
+                />
+              );
             })}
           </div>
         </div>
