@@ -1,6 +1,7 @@
 import React, { useContext, useReducer } from "react";
 import {
   AddToLocalStorageProps,
+  EditedJobProps,
   HandleChangeProps,
   ParentNodesProps,
   SetupDetails,
@@ -22,6 +23,10 @@ import {
   GET_JOB_SUCCESS,
   SET_EDIT_JOB,
   GET_JOB_BEGIN,
+  EDIT_JOB_BEGIN,
+  EDIT_JOB_SUCCESS,
+  EDIT_JOB_ERROR,
+  DELETE_JOB_BEGIN,
 } from "./actions";
 import reducer from "./reducer";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
@@ -66,7 +71,7 @@ const AppContext = React.createContext({
   createJob: async () => {},
   getJobs: async () => {},
   setEditJob: (id: string) => {},
-  deleteJob: (id: string) => {},
+  deleteJob: async (id: string) => {},
   editJob: async () => {},
 });
 
@@ -280,25 +285,41 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
   };
 
   const editJob = async (): Promise<void> => {
+    dispatch({ type: EDIT_JOB_BEGIN });
     let url = `/jobs/${state.editJobId}`;
 
-    const job = {
-      postion: state.position,
+    const job: EditedJobProps = {
+      position: state.position,
       company: state.company,
       location: state.jobLocation,
       jobType: state.jobType,
       status: state.status,
     };
+
     try {
       const { data } = await authfetch.patch(url, { ...job });
-      console.log(data);
+      dispatch({ type: EDIT_JOB_SUCCESS });
     } catch (error: any) {
-      console.log(error.response);
+      if (error.response.status === 401) return;
+      dispatch({
+        type: EDIT_JOB_ERROR,
+        payload: { msg: error.response.data.msg },
+      });
     }
+    clearAlert();
   };
 
-  const deleteJob = (id: string): void => {
-    console.log(`deleted job: ${id}`);
+  const deleteJob = async (id: string): Promise<void> => {
+    dispatch({ type: DELETE_JOB_BEGIN });
+    let url = `/jobs/${id}`;
+
+    try {
+      await authfetch.delete(url);
+      getJobs();
+    } catch (error) {
+      signOut();
+    }
+    clearAlert();
   };
 
   return (

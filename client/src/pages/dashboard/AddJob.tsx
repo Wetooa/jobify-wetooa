@@ -37,9 +37,9 @@ function AddJob() {
     }
     if (isEditing) {
       editJob();
-      return;
+    } else {
+      createJob();
     }
-    createJob();
   };
 
   return (

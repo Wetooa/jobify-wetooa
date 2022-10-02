@@ -109,6 +109,13 @@ interface JobInfoProps {
   icon: JSX.Element;
   text: string;
 }
+interface EditedJobProps {
+  position: string;
+  company: string;
+  location: string;
+  jobType: string;
+  status: string;
+}
 
 export type {
   InitialStateProps,
@@ -124,4 +131,5 @@ export type {
   JobsInitialState,
   IndividualJobProps,
   JobInfoProps,
+  EditedJobProps,
 };

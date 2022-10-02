@@ -20,6 +20,10 @@ import {
   GET_JOB_BEGIN,
   GET_JOB_SUCCESS,
   SET_EDIT_JOB,
+  EDIT_JOB_BEGIN,
+  EDIT_JOB_ERROR,
+  EDIT_JOB_SUCCESS,
+  DELETE_JOB_BEGIN,
 } from "./actions";
 import { initialState } from "./appContext";
 
@@ -161,6 +165,36 @@ const reducer = (
       jobLocation,
       jobType,
       status,
+    };
+  }
+  if (action.type === EDIT_JOB_BEGIN) {
+    return {
+      ...state,
+      isLoading: true,
+    };
+  }
+  if (action.type === EDIT_JOB_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: true,
+      alertType: "success",
+      alertText: "Successfully edited job!",
+    };
+  }
+  if (action.type === EDIT_JOB_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: true,
+      alertType: "danger",
+      alertText: action.payload?.msg!,
+    };
+  }
+  if (action.type === DELETE_JOB_BEGIN) {
+    return {
+      ...state,
+      isLoading: true,
     };
   }
   throw new Error(`No matching actions: ${action.type}`);
