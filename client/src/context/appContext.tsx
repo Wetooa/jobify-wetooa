@@ -27,6 +27,8 @@ import {
   EDIT_JOB_SUCCESS,
   EDIT_JOB_ERROR,
   DELETE_JOB_BEGIN,
+  SHOW_STATS_BEGIN,
+  SHOW_STATS_SUCCESS,
 } from "./actions";
 import reducer from "./reducer";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
@@ -57,6 +59,12 @@ const initialState = {
   totalJobs: 0,
   numOfPages: 1,
   page: 1,
+  stats: {
+    pending: 0,
+    interview: 0,
+    declined: 0,
+  },
+  monthlyApplications: [""],
 };
 
 const AppContext = React.createContext({
@@ -73,6 +81,7 @@ const AppContext = React.createContext({
   setEditJob: (id: string) => {},
   deleteJob: async (id: string) => {},
   editJob: async () => {},
+  showStats: async () => {},
 });
 
 const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
@@ -322,6 +331,23 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
     clearAlert();
   };
 
+  const showStats = async (): Promise<void> => {
+    dispatch({ type: SHOW_STATS_BEGIN });
+    try {
+      const { data } = await authfetch.get("/jobs/stats");
+      dispatch({
+        type: SHOW_STATS_SUCCESS,
+        payload: {
+          stats: data.defaultStats,
+          monthlyApplications: data.monthlyApplications,
+        },
+      });
+    } catch (error: any) {
+      signOut();
+    }
+    clearAlert();
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -338,6 +364,7 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
         setEditJob,
         deleteJob,
         editJob,
+        showStats,
       }}
     >
       {children}

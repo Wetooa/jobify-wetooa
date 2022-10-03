@@ -1,6 +1,11 @@
-import styled, { ThemedStyledProps } from "styled-components";
+import styled, { StyledComponent, ThemedStyledProps } from "styled-components";
 
-const Wrapper = styled.article`
+const Wrapper: StyledComponent<
+  "article",
+  any,
+  { color: any; bcg: any },
+  never
+> = styled.article`
   padding: 2rem;
   background: var(--white);
   border-radius: var(--borderRadius);

@@ -3,6 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { BadRequestError, NotFound, UnauthenticatedError } from "../errors";
 import Job from "../models/Job";
 import { checkPermissions } from "../utils/checkPermissions";
+import mongoose from "mongoose";
 
 export const createJob = async (req: Request, res: Response) => {
   const { position, company } = req.body;
@@ -66,5 +67,42 @@ export const deleteJob = async (req: Request, res: Response) => {
 };
 
 export const showStats = async (req: Request, res: Response) => {
-  res.send("show stats");
+  interface StatsProps {
+    pending: number;
+    interview: number;
+    declined: number;
+  }
+  interface AccumulatorProps {
+    title: number;
+  }
+  interface CurrentProps {
+    _id: string;
+    count: number;
+  }
+
+  let stats: any | StatsProps = await Job.aggregate([
+    {
+      $match: { createdBy: new mongoose.Types.ObjectId(req.body.user.userId) },
+    },
+    {
+      $group: { _id: "$status", count: { $sum: 1 } },
+    },
+  ]);
+
+  // how to reduce in javascript
+  stats = stats.reduce((acc: any, curr: CurrentProps): AccumulatorProps => {
+    const { _id: title, count } = curr;
+    acc[title] = count;
+    return acc;
+  }, {});
+
+  const defaultStats: StatsProps = {
+    pending: stats.pending || 0,
+    interview: stats.interview || 0,
+    declined: stats.declined || 0,
+  };
+
+  let monthlyApplication: any = [];
+
+  res.status(StatusCodes.OK).json({ defaultStats, monthlyApplication });
 };

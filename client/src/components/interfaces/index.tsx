@@ -28,6 +28,8 @@ interface InitialStateProps {
   totalJobs: number;
   numOfPages: number;
   page: number;
+  stats: StatsProps;
+  monthlyApplications: any[];
 }
 interface ParentNodesProps {
   children: React.ReactNode;
@@ -38,7 +40,8 @@ interface ReducerActionProp {
   payload?: AddToLocalStorageProps &
     HandleChangeProps &
     GetJobProps &
-    EditJobProps;
+    EditJobProps &
+    ShowStatsProps;
 }
 interface AddToLocalStorageProps {
   user?: UserProps;
@@ -57,6 +60,15 @@ interface GetJobProps {
 }
 interface EditJobProps {
   id?: string;
+}
+interface ShowStatsProps {
+  stats?: StatsProps;
+  monthlyApplications?: string[];
+}
+interface StatsProps {
+  pending: number;
+  interview: number;
+  declined: number;
 }
 
 interface SetupDetails {
@@ -116,6 +128,13 @@ interface EditedJobProps {
   jobType: string;
   status: string;
 }
+interface StatItemProps {
+  title: string;
+  count: number;
+  icon: JSX.Element;
+  color: string;
+  bcg: string;
+}
 
 export type {
   InitialStateProps,
@@ -132,4 +151,5 @@ export type {
   IndividualJobProps,
   JobInfoProps,
   EditedJobProps,
+  StatItemProps,
 };
