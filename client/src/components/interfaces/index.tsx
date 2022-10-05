@@ -136,6 +136,13 @@ interface StatItemProps {
   bcg: string;
 }
 
+interface ChartDataProps {
+  data: {
+    date: string;
+    count: number;
+  }[];
+}
+
 export type {
   InitialStateProps,
   ParentNodesProps,
@@ -152,4 +159,5 @@ export type {
   JobInfoProps,
   EditedJobProps,
   StatItemProps,
+  ChartDataProps,
 };

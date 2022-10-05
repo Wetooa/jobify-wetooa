@@ -4,6 +4,7 @@ import { BadRequestError, NotFound, UnauthenticatedError } from "../errors";
 import Job from "../models/Job";
 import { checkPermissions } from "../utils/checkPermissions";
 import mongoose from "mongoose";
+import moment from "moment";
 
 export const createJob = async (req: Request, res: Response) => {
   const { position, company } = req.body;
@@ -102,7 +103,40 @@ export const showStats = async (req: Request, res: Response) => {
     declined: stats.declined || 0,
   };
 
-  let monthlyApplication: any = [];
+  // ok lets try to understand
+  let monthlyApplications = await Job.aggregate([
+    // this part is basically get me all that matches this id
+    {
+      $match: { createdBy: new mongoose.Types.ObjectId(req.body.user.userId) },
+    },
+    // this part is like group those with the same year then the same month
+    {
+      $group: {
+        _id: {
+          year: { $year: "$createdAt" },
+          month: { $month: "$createdAt" },
+        },
+        count: { $sum: 1 },
+      },
+    },
+    // this part is like sort what i made earlier by the year in _id then by month in _id
+    { $sort: { "_id.year": -1, "_id.month": -1 } },
+    { $limit: 6 },
+  ]);
 
-  res.status(StatusCodes.OK).json({ defaultStats, monthlyApplication });
+  monthlyApplications = monthlyApplications
+    .map((item) => {
+      const {
+        _id: { year, month },
+        count,
+      } = item;
+      const date = moment()
+        .month(month - 1)
+        .year(year)
+        .format("MMM Y");
+      return { date, count };
+    })
+    .reverse();
+
+  res.status(StatusCodes.OK).json({ defaultStats, monthlyApplications });
 };

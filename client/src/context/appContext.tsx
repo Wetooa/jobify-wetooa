@@ -64,7 +64,12 @@ const initialState = {
     interview: 0,
     declined: 0,
   },
-  monthlyApplications: [""],
+  monthlyApplications: [
+    {
+      date: "",
+      count: 0,
+    },
+  ],
 };
 
 const AppContext = React.createContext({
@@ -335,6 +340,7 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
     dispatch({ type: SHOW_STATS_BEGIN });
     try {
       const { data } = await authfetch.get("/jobs/stats");
+
       dispatch({
         type: SHOW_STATS_SUCCESS,
         payload: {
