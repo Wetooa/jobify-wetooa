@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { BadRequestError, NotFound, UnauthenticatedError } from "../errors";
 import Job from "../models/Job";
 import { checkPermissions } from "../utils/checkPermissions";
-import mongoose from "mongoose";
+import mongoose, { Query, RegexOptions } from "mongoose";
 import moment from "moment";
 
 export const createJob = async (req: Request, res: Response) => {
@@ -20,7 +20,57 @@ export const createJob = async (req: Request, res: Response) => {
 };
 
 export const getAllJobs = async (req: Request, res: Response) => {
-  const jobs = await Job.find({ createdBy: req.body.user.userId });
+  interface ReqQueryProps {
+    search?: string;
+    status?: "interview" | "declined" | "pending";
+    type?: "fulltime" | "partime" | "remote" | "internship";
+    sort?: any;
+  }
+  interface QueryObjectProps {
+    company?: {
+      $regex: any;
+      options: string;
+    };
+    jobType?: "fulltime" | "partime" | "remote" | "internship";
+    status?: "interview" | "declined" | "pending";
+    createdBy: string;
+  }
+  interface ResultProps {
+    _id: string;
+    company: string;
+    position: string;
+    status: "interview" | "declined" | "pending";
+    jobType: "fulltime" | "partime" | "remote" | "internship";
+    jobLocation: string;
+    createdBy: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  }
+
+  const { search, status, type, sort }: ReqQueryProps = req.query;
+  const queryObject: QueryObjectProps = { createdBy: req.body.user.userId };
+
+  if (search) {
+    queryObject.company = { $regex: search, options: "i" };
+  }
+  if (status) {
+    queryObject.status = status;
+  }
+  if (type) {
+    queryObject.jobType = type;
+  }
+
+  // ok smth is wrong here
+  let result: any = await Job.find(queryObject);
+  if (sort) {
+    result = result.sort(sort);
+  } else {
+    result = result.sort("createdAt");
+  }
+
+  const jobs = await result;
+
   res
     .status(StatusCodes.OK)
     .json({ jobs, totalJobs: jobs.length, numOfPages: 1 });

@@ -266,7 +266,18 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
   };
 
   const clearValues = (): void => {
-    dispatch({ type: CLEAR_VALUES });
+    if (state.isEditing) {
+      dispatch({
+        type: SET_EDIT_JOB,
+        payload: {
+          id: state.editJobId,
+        },
+      });
+    } else {
+      dispatch({
+        type: CLEAR_VALUES,
+      });
+    }
   };
 
   const getJobs = async (): Promise<void> => {

@@ -31,7 +31,7 @@ const errorHandler = (
     defaultError.msg = `${err.keyValue.email} is already in use! ${
       Object.keys(err.keyValue)[0][0].toUpperCase() +
       Object.keys(err.keyValue)[0].substring(1)
-    } must be unique`;
+    } must be unique!`;
   }
 
   res
