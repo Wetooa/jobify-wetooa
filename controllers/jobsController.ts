@@ -22,51 +22,69 @@ export const createJob = async (req: Request, res: Response) => {
 export const getAllJobs = async (req: Request, res: Response) => {
   interface ReqQueryProps {
     search?: string;
-    status?: "interview" | "declined" | "pending";
-    type?: "fulltime" | "partime" | "remote" | "internship";
-    sort?: any;
+    status?: "all" | "interview" | "declined" | "pending";
+    jobType?: "all" | "fulltime" | "partime" | "remote" | "internship";
+    sort?: "latest" | "oldest" | "company" | "position";
+  }
+  interface QuerySearchProps {
+    $regex: ReqQueryProps["search"];
+    $options: any;
   }
   interface QueryObjectProps {
-    company?: {
-      $regex: any;
-      options: string;
-    };
+    search?:
+      | [
+          { company: QuerySearchProps },
+          { position: QuerySearchProps },
+          { jobLocation: QuerySearchProps }
+        ]
+      | [];
     jobType?: "fulltime" | "partime" | "remote" | "internship";
     status?: "interview" | "declined" | "pending";
     createdBy: string;
   }
-  interface ResultProps {
-    _id: string;
-    company: string;
-    position: string;
-    status: "interview" | "declined" | "pending";
-    jobType: "fulltime" | "partime" | "remote" | "internship";
-    jobLocation: string;
-    createdBy: string;
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
-  }
 
-  const { search, status, type, sort }: ReqQueryProps = req.query;
-  const queryObject: QueryObjectProps = { createdBy: req.body.user.userId };
+  const { search, status, jobType, sort }: ReqQueryProps = req.query;
+
+  const queryObject: QueryObjectProps = {
+    createdBy: req.body.user.userId,
+    search: [
+      { company: { $regex: "", $options: "i" } },
+      { position: { $regex: "", $options: "i" } },
+      { jobLocation: { $regex: "", $options: "i" } },
+    ],
+  };
 
   if (search) {
-    queryObject.company = { $regex: search, options: "i" };
+    queryObject.search = [
+      { company: { $regex: search, $options: "i" } },
+      { position: { $regex: search, $options: "i" } },
+      { jobLocation: { $regex: search, $options: "i" } },
+    ];
   }
-  if (status) {
+  if (status && status !== "all") {
     queryObject.status = status;
   }
-  if (type) {
-    queryObject.jobType = type;
+  if (jobType && jobType !== "all") {
+    queryObject.jobType = jobType;
   }
 
   // ok smth is wrong here
-  let result: any = await Job.find(queryObject);
-  if (sort) {
-    result = result.sort(sort);
-  } else {
+  // ahhhhh ok i get it na thx john, so if u use await, its gonna give u the result na
+  // if not, its gonna think of it as a query pa
+
+  const { search: searchObject, ...query } = queryObject;
+  let result: any = Job.find({
+    $and: [{ $or: searchObject }, query],
+  });
+
+  if (sort === "latest") {
+    result = result.sort("-createdAt");
+  } else if (sort === "oldest") {
     result = result.sort("createdAt");
+  } else if (sort?.startsWith("a-z")) {
+    result = result.sort(sort?.substring(4));
+  } else {
+    result = result.sort(`-${sort?.substring(4)}`);
   }
 
   const jobs = await result;

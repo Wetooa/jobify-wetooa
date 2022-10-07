@@ -1,4 +1,5 @@
 import {
+  FiltersInitialState,
   IndividualJobProps,
   InitialStateProps,
   JobsInitialState,
@@ -26,6 +27,7 @@ import {
   DELETE_JOB_BEGIN,
   SHOW_STATS_BEGIN,
   SHOW_STATS_SUCCESS,
+  CLEAR_FILTERS,
 } from "./actions";
 import { initialState } from "./appContext";
 
@@ -212,6 +214,18 @@ const reducer = (
       isLoading: false,
       stats: action.payload?.stats!,
       monthlyApplications: action.payload?.monthlyApplications!,
+    };
+  }
+  if (action.type === CLEAR_FILTERS) {
+    const initialState: FiltersInitialState = {
+      search: "",
+      searchStatus: "all",
+      searchJobType: "all",
+      sort: "latest",
+    };
+    return {
+      ...state,
+      ...initialState,
     };
   }
   throw new Error(`No matching actions: ${action.type}`);

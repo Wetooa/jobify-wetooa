@@ -29,6 +29,7 @@ import {
   DELETE_JOB_BEGIN,
   SHOW_STATS_BEGIN,
   SHOW_STATS_SUCCESS,
+  CLEAR_FILTERS,
 } from "./actions";
 import reducer from "./reducer";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
@@ -64,12 +65,19 @@ const initialState = {
     interview: 0,
     declined: 0,
   },
-  monthlyApplications: [
-    {
-      date: "",
-      count: 0,
-    },
+  monthlyApplications: [{ date: "", count: 0 }],
+  search: "",
+  searchStatus: "all",
+  searchJobType: "all",
+  sortOptions: [
+    "latest",
+    "oldest",
+    "a-z company",
+    "a-z position",
+    "z-a company",
+    "z-a position",
   ],
+  sort: "latest",
 };
 
 const AppContext = React.createContext({
@@ -87,6 +95,7 @@ const AppContext = React.createContext({
   deleteJob: async (id: string) => {},
   editJob: async () => {},
   showStats: async () => {},
+  clearFilters: () => {},
 });
 
 const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
@@ -282,7 +291,14 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
 
   const getJobs = async (): Promise<void> => {
     dispatch({ type: GET_JOB_BEGIN });
-    let url = "/jobs";
+    const { search, searchJobType, searchStatus, sort } = state;
+
+    let url = `/jobs?&jobType=${searchJobType}&status=${searchStatus}&sort=${sort}`;
+
+    if (search) {
+      url += `&search=${search}`;
+    }
+
     try {
       const { data } = await authfetch(url);
       const { jobs, totalJobs, numOfPages } = data;
@@ -365,6 +381,10 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
     clearAlert();
   };
 
+  const clearFilters = () => {
+    dispatch({ type: CLEAR_FILTERS });
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -382,6 +402,7 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
         deleteJob,
         editJob,
         showStats,
+        clearFilters,
       }}
     >
       {children}

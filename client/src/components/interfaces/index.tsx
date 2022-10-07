@@ -30,6 +30,11 @@ interface InitialStateProps {
   page: number;
   stats: StatsProps;
   monthlyApplications: any[];
+  search: string;
+  searchStatus: string;
+  searchJobType: string;
+  sortOptions: string[];
+  sort: string;
 }
 interface ParentNodesProps {
   children: React.ReactNode;
@@ -69,6 +74,12 @@ interface StatsProps {
   pending: number;
   interview: number;
   declined: number;
+}
+interface FiltersInitialState {
+  search: string;
+  searchStatus: string;
+  searchJobType: string;
+  sort: string;
 }
 
 interface SetupDetails {
@@ -160,4 +171,5 @@ export type {
   EditedJobProps,
   StatItemProps,
   ChartDataProps,
+  FiltersInitialState,
 };
