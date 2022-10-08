@@ -30,6 +30,7 @@ import {
   SHOW_STATS_BEGIN,
   SHOW_STATS_SUCCESS,
   CLEAR_FILTERS,
+  CHANGE_PAGE,
 } from "./actions";
 import reducer from "./reducer";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
@@ -96,6 +97,7 @@ const AppContext = React.createContext({
   editJob: async () => {},
   showStats: async () => {},
   clearFilters: () => {},
+  changePage: (page: number) => {},
 });
 
 const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
@@ -291,12 +293,14 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
 
   const getJobs = async (): Promise<void> => {
     dispatch({ type: GET_JOB_BEGIN });
-    const { search, searchJobType, searchStatus, sort } = state;
+    const { search, searchJobType, searchStatus, sort, page } = state;
 
     let url = `/jobs?&jobType=${searchJobType}&status=${searchStatus}&sort=${sort}`;
 
     if (search) {
-      url += `&search=${search}`;
+      url += `&search=${search}&page=1`;
+    } else {
+      url += `&page=${page}`;
     }
 
     try {
@@ -385,6 +389,15 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
     dispatch({ type: CLEAR_FILTERS });
   };
 
+  const changePage = (page: number) => {
+    dispatch({
+      type: CHANGE_PAGE,
+      payload: {
+        page,
+      },
+    });
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -403,6 +416,7 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
         editJob,
         showStats,
         clearFilters,
+        changePage,
       }}
     >
       {children}

@@ -25,6 +25,8 @@ export const getAllJobs = async (req: Request, res: Response) => {
     status?: "all" | "interview" | "declined" | "pending";
     jobType?: "all" | "fulltime" | "partime" | "remote" | "internship";
     sort?: "latest" | "oldest" | "company" | "position";
+    page?: number;
+    limit?: number;
   }
   interface QuerySearchProps {
     $regex: ReqQueryProps["search"];
@@ -43,7 +45,8 @@ export const getAllJobs = async (req: Request, res: Response) => {
     createdBy: string;
   }
 
-  const { search, status, jobType, sort }: ReqQueryProps = req.query;
+  const { search, status, jobType, sort, page, limit }: ReqQueryProps =
+    req.query;
 
   const queryObject: QueryObjectProps = {
     createdBy: req.body.user.userId,
@@ -87,11 +90,19 @@ export const getAllJobs = async (req: Request, res: Response) => {
     result = result.sort(`-${sort?.substring(4)}`);
   }
 
+  // pagination
+  const jobsLimit: number = limit || 10;
+  const skip: number = (page! - 1) * jobsLimit;
+  result = result.skip(skip).limit(jobsLimit);
+
   const jobs = await result;
 
-  res
-    .status(StatusCodes.OK)
-    .json({ jobs, totalJobs: jobs.length, numOfPages: 1 });
+  const totalJobs = await Job.countDocuments({
+    $and: [{ $or: searchObject }, query],
+  });
+  const numOfPages = Math.ceil(totalJobs / jobsLimit);
+
+  res.status(StatusCodes.OK).json({ jobs, totalJobs, numOfPages });
 };
 
 export const updateJob = async (req: Request, res: Response) => {

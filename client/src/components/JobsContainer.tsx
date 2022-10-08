@@ -1,16 +1,18 @@
 import Wrapper from "../assets/wrappers/JobsContainer";
-import { useEffect } from "react";
 import { useAppContext } from "../context/appContext";
 import Job from "./Job";
 import Loading from "./Loading";
 import { IndividualJobProps } from "./interfaces";
+import PageBtnContainer from "./PageBtnContainer";
+import { useEffect } from "react";
 
 function JobsContainer() {
-  const { isLoading, jobs, totalJobs, numOfPages, getJobs } = useAppContext();
+  const { isLoading, jobs, totalJobs, numOfPages, page, getJobs } =
+    useAppContext();
 
   useEffect(() => {
     getJobs();
-  }, []);
+  }, [page]);
 
   if (isLoading) {
     return <Loading center />;
@@ -34,6 +36,7 @@ function JobsContainer() {
           return <Job key={job._id} {...job} />;
         })}
       </div>
+      {numOfPages > 1 && <PageBtnContainer />}
     </Wrapper>
   );
 }

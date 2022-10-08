@@ -46,7 +46,8 @@ interface ReducerActionProp {
     HandleChangeProps &
     GetJobProps &
     EditJobProps &
-    ShowStatsProps;
+    ShowStatsProps &
+    ChangePageProps;
 }
 interface AddToLocalStorageProps {
   user?: UserProps;
@@ -69,6 +70,9 @@ interface EditJobProps {
 interface ShowStatsProps {
   stats?: StatsProps;
   monthlyApplications?: string[];
+}
+interface ChangePageProps {
+  page?: number;
 }
 interface StatsProps {
   pending: number;
