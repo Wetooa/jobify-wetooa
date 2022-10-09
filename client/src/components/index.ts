@@ -4,7 +4,7 @@ import FormRowSelect from "./FormRowSelect";
 import Alert from "./Alert";
 import Loading from "./Loading";
 
-import NavBar from "./Navbar";
+import NavBar from "./NavBar";
 import BigSidebar from "./BigSidebar";
 import SmallSidebar from "./SmallSidebar";
 

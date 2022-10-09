@@ -103,8 +103,6 @@ const AppContext = React.createContext({
 const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  // axios.defaults.headers.common["authorization"] = `Bearer ${state.token}`;
-
   const authfetch = axios.create({
     baseURL: "/api/v1",
   });
@@ -342,7 +340,7 @@ const AppProvider: React.FC<ParentNodesProps> = ({ children }) => {
     };
 
     try {
-      const { data } = await authfetch.patch(url, { ...job });
+      await authfetch.patch(url, { ...job });
       dispatch({ type: EDIT_JOB_SUCCESS });
     } catch (error: any) {
       if (error.response.status === 401) return;

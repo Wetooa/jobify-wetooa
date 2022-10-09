@@ -29,6 +29,7 @@ function SearchContainer() {
 
   useEffect(() => {
     getJobs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, searchJobType, searchStatus, sort]);
 
   return (
