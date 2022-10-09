@@ -12,6 +12,7 @@ function JobsContainer() {
 
   useEffect(() => {
     getJobs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   if (isLoading) {
@@ -31,6 +32,7 @@ function JobsContainer() {
       <h5>
         {totalJobs} job{totalJobs > 1 && "s"} Found
       </h5>
+      {numOfPages > 1 && <PageBtnContainer />}
       <div className="jobs">
         {jobs.map((job: IndividualJobProps) => {
           return <Job key={job._id} {...job} />;

@@ -29,7 +29,7 @@ function PageBtnContainer() {
             <button
               type="button"
               key={pageItem}
-              className={`pageBtn ${page === pageItem && `active`}`}
+              className={page === pageItem ? "pageBtn active" : "pageBtn"}
               onClick={() => changePage(pageItem)}
             >
               {pageItem}
