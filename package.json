@@ -10,7 +10,7 @@
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\" ",
     "install-client": "cd client && npm install",
     "heroku-postbuild": "npm run install-client && npm run build-client",
-    "vercel-build": "npm run install-client && npm run build-client"
+    "vercel-build": "npm run install-client"
   },
   "repository": {
     "type": "git",
