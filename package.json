@@ -2,7 +2,7 @@
   "name": "jobify-wetooa",
   "version": "1.0.0",
   "description": "Project in Action - [Jobify](https://www.jobify.live/)",
-  "main": "index.ts",
+  "main": "./dist/index.js",
   "scripts": {
     "start": "node dist/index.js --ignore client",
     "server": "nodemon index.ts --ignore client",
