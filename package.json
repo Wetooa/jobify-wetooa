@@ -4,14 +4,14 @@
   "description": "Project in Action - [Jobify](https://www.jobify.live/)",
   "main": "./dist/index.js",
   "scripts": {
-    "start": "node dist/index.js --ignore client",
+    "start": "node ./dist/index.js --ignore client",
     "server": "nodemon index.ts --ignore client",
     "client": "npm start --prefix ./client",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\" ",
     "build": "tsc",
     "build-client": "cd client && npm run build",
     "install-client": "cd client && npm install",
-    "heroku-postbuild": "npm run install-client && npm run build-client",
+    "heroku-postbuild": "npm run install-client",
     "vercel-build": "npm run install-client"
   },
   "repository": {
