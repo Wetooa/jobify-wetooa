@@ -2,7 +2,7 @@
   "name": "jobify-wetooa",
   "version": "1.0.0",
   "description": "Project in Action - [Jobify](https://www.jobify.live/)",
-  "main": "index.js",
+  "main": "server.ts",
   "scripts": {
     "build-client": "cd client && npm run build",
     "start": "nodemon server.ts --ignore client",
